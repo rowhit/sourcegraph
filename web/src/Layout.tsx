@@ -114,7 +114,10 @@ export const Layout: React.FunctionComponent<LayoutProps> = props => {
         !parseSearchURLQuery(props.location.search, props.interactiveSearchMode)
 
     const needsSiteInit = window.context.showOnboarding
-    const isSiteInit = props.location.pathname === '/site-admin/init'
+    const isSiteInitOrOnboarding =
+        props.location.pathname === '/site-admin/init' ||
+        props.location.pathname === '/asdf-welcome' ||
+        props.location.pathname.startsWith('/asdf-welcome/')
 
     const hideGlobalSearchInput: GlobalNavbar['props']['hideGlobalSearchInput'] = props.location.pathname === '/stats'
 
@@ -134,12 +137,12 @@ export const Layout: React.FunctionComponent<LayoutProps> = props => {
                 isSiteAdmin={!!props.authenticatedUser && props.authenticatedUser.siteAdmin}
                 settingsCascade={props.settingsCascade}
             />
-            {!needsSiteInit && !isSiteInit && !!props.authenticatedUser && (
+            {!needsSiteInit && !isSiteInitOrOnboarding && !!props.authenticatedUser && (
                 <IntegrationsToast history={props.history} />
             )}
-            {!isSiteInit && <SurveyToast authenticatedUser={props.authenticatedUser} />}
-            {!isSiteInit && <LiteralSearchToast isSourcegraphDotCom={props.isSourcegraphDotCom} />}
-            {!isSiteInit && (
+            {!isSiteInitOrOnboarding && <SurveyToast authenticatedUser={props.authenticatedUser} />}
+            {!isSiteInitOrOnboarding && <LiteralSearchToast isSourcegraphDotCom={props.isSourcegraphDotCom} />}
+            {!isSiteInitOrOnboarding && (
                 <GlobalNavbar
                     {...props}
                     lowProfile={isSearchHomepage}
@@ -147,7 +150,7 @@ export const Layout: React.FunctionComponent<LayoutProps> = props => {
                     hideNavLinks={false}
                 />
             )}
-            {needsSiteInit && !isSiteInit && <Redirect to="/site-admin/init" />}
+            {needsSiteInit && !isSiteInitOrOnboarding && <Redirect to="/site-admin/init" />}
             <ErrorBoundary location={props.location}>
                 <Suspense fallback={<LoadingSpinner className="icon-inline m-2" />}>
                     <Switch>
