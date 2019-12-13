@@ -48,3 +48,46 @@
         margin-right: 0.5rem;
     }
 }
+
+// TODO: move this to a separate page
+.welcome-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex: 1 1 auto;
+
+    color: $color-light-text-1;
+
+    &__content {
+        width: 26rem;
+        padding: 1.5rem;
+        border: solid 1px $color-light-border;
+    }
+
+    &__logo {
+        height: 1em;
+        display: inline-block;
+        margin-right: 0.25em;
+    }
+}
+
+.welcome-page-left {
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    flex-direction: column;
+    flex: 1 1 auto;
+
+    color: $color-light-text-1;
+
+    &__content {
+        margin-top: 2rem;
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
+
+    &__content-header {
+        margin-bottom: 1em;
+    }
+}
