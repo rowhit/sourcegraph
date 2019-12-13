@@ -3,6 +3,7 @@ import { Redirect, RouteComponentProps } from 'react-router'
 import { LayoutProps } from './Layout'
 import { parseSearchURLQuery } from './search'
 import { lazyComponent } from './util/lazyComponent'
+import { WelcomePage } from './onboarding/WelcomePage'
 
 const SearchPage = lazyComponent(() => import('./search/input/SearchPage'), 'SearchPage')
 const SearchResults = lazyComponent(() => import('./search/results/SearchResults'), 'SearchResults')
@@ -115,6 +116,12 @@ export const routes: readonly LayoutRouteProps<any>[] = [
         exact: true,
         render: lazyComponent(() => import('./site-admin/SiteInitPage'), 'SiteInitPage'),
         forceNarrowWidth: false,
+    },
+    {
+        path: '/asdf-welcome',
+        render: (props: any) => {
+            return <WelcomePage />
+        },
     },
     {
         path: '/site-admin',
