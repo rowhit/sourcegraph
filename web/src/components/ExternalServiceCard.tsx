@@ -18,7 +18,7 @@ interface ExternalServiceCardProps {
     /**
      * A short description that will appear in the external service "button" under the title
      */
-    shortDescription: string
+    shortDescription?: string
 
     kind: GQL.ExternalServiceKind
 

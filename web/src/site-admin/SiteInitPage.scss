@@ -82,9 +82,10 @@
     color: $color-light-text-1;
 
     &__content {
-        margin-top: 2rem;
-        margin-left: 2rem;
-        margin-right: 2rem;
+        width: 50%;
+        margin-top: 10rem;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     &__content-header {

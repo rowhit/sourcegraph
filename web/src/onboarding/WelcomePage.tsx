@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { Link } from '../../../shared/src/components/Link'
-import { ALL_EXTERNAL_SERVICE_ADD_VARIANTS } from '../site-admin/externalServices'
+import { ALL_EXTERNAL_SERVICE_ADD_VARIANTS, GITHUB_EXTERNAL_SERVICE } from '../site-admin/externalServices'
 import { ExternalServiceCard } from '../components/ExternalServiceCard'
 import { SiteAdminAddExternalServicesPage } from '../site-admin/SiteAdminAddExternalServicesPage'
+import * as GQL from '../../../shared/src/graphql/schema'
 
 /**
  * The explore area, which shows cards containing summaries and actions from product features. The purpose of it is
@@ -41,6 +42,12 @@ export class WelcomeAddReposPage extends React.Component<WelcomeAddReposPageProp
     public state: WelcomeAddReposPageState = {}
 
     public render(): JSX.Element | null {
+        const externalServices = ALL_EXTERNAL_SERVICE_ADD_VARIANTS.filter(
+            s => s.kind !== GQL.ExternalServiceKind.PHABRICATOR
+        ).map(s => ({ ...s, shortDescription: undefined }))
+
+        // const externalServices = externalServiceADdVar
+
         return (
             <div className="welcome-page-left">
                 <div className="welcome-page-left__content">
@@ -48,7 +55,7 @@ export class WelcomeAddReposPage extends React.Component<WelcomeAddReposPageProp
                         Where are the repositories you&rsquo;d like Sourcegraph to index?
                     </h2>
 
-                    {ALL_EXTERNAL_SERVICE_ADD_VARIANTS.map((service, i) => (
+                    {externalServices.map((service, i) => (
                         <div className="add-external-services-page__card" key={i}>
                             <ExternalServiceCard
                                 to={SiteAdminAddExternalServicesPage.getAddURL(service)}
