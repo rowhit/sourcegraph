@@ -12,13 +12,12 @@ import { PageTitle } from '../components/PageTitle'
 import { refreshSiteFlags } from '../site/backend'
 import { ThemeProps } from '../../../shared/src/theme'
 import { ExternalServiceCard } from '../components/ExternalServiceCard'
-import { ExternalServiceVariant, getExternalService } from './externalServices'
 import { SiteAdminExternalServiceForm } from './SiteAdminExternalServiceForm'
+import { externalServices, ExternalServiceKindMetadata } from './externalServices'
 
 interface Props extends ThemeProps {
     history: H.History
-    kind: GQL.ExternalServiceKind
-    variant?: ExternalServiceVariant
+    externalService: ExternalServiceKindMetadata
     eventLogger: {
         logViewEvent: (event: 'AddExternalService') => void
         log: (event: 'AddExternalServiceFailed' | 'AddExternalServiceSucceeded', eventProperties?: any) => void
@@ -51,7 +50,7 @@ interface State {
 export class SiteAdminAddExternalServicePage extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props)
-        const serviceKindMetadata = getExternalService(this.props.kind, this.props.variant)
+        const serviceKindMetadata = externalServices[this.props.id]
         this.state = {
             loading: false,
             displayName: serviceKindMetadata.defaultDisplayName,
@@ -98,6 +97,7 @@ export class SiteAdminAddExternalServicePage extends React.Component<Props, Stat
     }
 
     public render(): JSX.Element | null {
+        // >>>>>>>>>>>>>>>>>>>>> use this.props.externalService directly
         const kindMetadata = getExternalService(this.props.kind, this.props.variant)
         const createdExternalService = this.state.externalService
         return (

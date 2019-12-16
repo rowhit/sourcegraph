@@ -1,6 +1,5 @@
 import { Edit, FormattingOptions, JSONPath } from '@sqs/jsonc-parser'
 import { setProperty } from '@sqs/jsonc-parser/lib/edit'
-import { flatMap, map } from 'lodash'
 import AmazonIcon from 'mdi-react/AmazonIcon'
 import BitbucketIcon from 'mdi-react/BitbucketIcon'
 import GithubCircleIcon from 'mdi-react/GithubCircleIcon'
@@ -103,9 +102,9 @@ const editorActionComments = {
     //    (https://docs.sourcegraph.com/admin/repo/permissions#sudo-access-token).`,
 }
 
-const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
+const GITHUB_DOTCOM: ExternalServiceKindMetadata = {
     kind: GQL.ExternalServiceKind.GITHUB,
-    title: 'GitHub repositories',
+    title: 'GitHub.com repositories',
     icon: GithubCircleIcon,
     jsonSchema: githubSchemaJSON,
     editorActions: [
@@ -229,6 +228,60 @@ const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
   //   }
   // ]
 }`,
+}
+const GITHUB_ENTERPRISE: ExternalServiceKindMetadata = {
+    ...GITHUB_DOTCOM,
+    title: 'GitHub Enterprise',
+    shortDescription: undefined,
+    defaultDisplayName: 'GitHub Enterprise',
+    defaultConfig: `// Use Ctrl+Space for completion, and hover over JSON properties for documentation.
+    // GitHub external service docs: https://docs.sourcegraph.com/admin/external_service/github
+    {
+      // GitHub Enterprise URL
+      "url": "https://github.example.com",
+
+      // token: GitHub API access token.
+      // Visit https://[github-enterprise-url]/settings/tokens/new?scopes=repo&description=Sourcegraph to create a token
+      // with access to public and private repositories
+      "token": "<access token>",
+
+      // SELECTING REPOSITORIES
+      //
+      // There are 3 fields used to select repositories for searching and code intel:
+      //  - repositoryQuery (required)
+      //  - repos
+      //  - exclude
+      //
+
+      // repositoryQuery: List of strings, either a special keyword, e.g. "affiliated", or
+      // GitHub search qualifiers, e.g. "archived:false"
+      //
+      // For getting started, use either:
+      //  - "org:<name>" // (e.g. "org:sourcegraph") all repositories belonging to the organization
+      // or
+      //  - "affiliated" // all repositories affiliated (accessible) by the token's owner
+      //
+      // Additional query strings can be added to refine results:
+      //  - "archived:false fork:no created:>=2016" // use of multiple search qualifiers
+      //  - "user:docker repo:kubernetes/kubernetes" // fetch repositories outside of the user/org account
+      //
+      // See https://help.github.com/en/articles/searching-for-repositories for the list of search qualifiers.
+      "repositoryQuery": [
+      //   "org:name"
+      ],
+
+      // repos: Explicit list of repositories to select
+      // "repos": [
+      //   "<owner>/<repository>"
+      // ],
+
+      // exclude: Repositories to exclude (overrides repositories from repositoryQuery and repos)
+      // "exclude": [
+      //   {
+      //   "name": "<owner>/<repository>"
+      //   }
+      // ]
+    }`,
 }
 const AWS_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
     kind: GQL.ExternalServiceKind.AWSCODECOMMIT,
@@ -718,7 +771,7 @@ const PHABRICATOR_SERVICE: ExternalServiceKindMetadata = {
         },
     ],
 }
-const OTHER_SERVICE: AddExternalServiceMetadata = {
+const OTHER_SERVICE: ExternalServiceKindMetadata = {
     kind: GQL.ExternalServiceKind.OTHER,
     title: 'Single Git repositories',
     icon: GitIcon,
@@ -758,142 +811,27 @@ const OTHER_SERVICE: AddExternalServiceMetadata = {
     ],
 }
 
-// >>>>>>>>>>>>>>>>>>>>>
-// - Eliminate variants, and just have a flat list of different external-server-add options
-// keyed by string id ("github, ghe")
-// - Then use these in the onboarding flow
-
-// TODO: remove
-export const ALL_EXTERNAL_SERVICES: Record<GQL.ExternalServiceKind, ExternalServiceKindMetadata> = {
-    [GQL.ExternalServiceKind.GITHUB]: GITHUB_EXTERNAL_SERVICE,
-    [GQL.ExternalServiceKind.AWSCODECOMMIT]: AWS_EXTERNAL_SERVICE,
-    [GQL.ExternalServiceKind.BITBUCKETCLOUD]: BITBUCKET_CLOUD_SERVICE,
-    [GQL.ExternalServiceKind.BITBUCKETSERVER]: BITBUCKET_SERVER_SERVICE,
-    [GQL.ExternalServiceKind.GITLAB]: GITLAB_SERVICE,
-    [GQL.ExternalServiceKind.GITOLITE]: GITOLITE_SERVICE,
-    [GQL.ExternalServiceKind.PHABRICATOR]: PHABRICATOR_SERVICE,
-    [GQL.ExternalServiceKind.OTHER]: OTHER_SERVICE,
+export const externalServices: Record<string, ExternalServiceKindMetadata> = {
+    github: GITHUB_DOTCOM,
+    ghe: GITHUB_ENTERPRISE,
+    bitbucket: BITBUCKET_CLOUD_SERVICE,
+    bitbucketserver: BITBUCKET_SERVER_SERVICE,
+    gitlab: GITLAB_SERVICE,
+    gitolite: GITOLITE_SERVICE,
+    phabricator: PHABRICATOR_SERVICE,
+    git: OTHER_SERVICE,
+    aws: AWS_EXTERNAL_SERVICE,
 }
 
-/**
- * Some external services have variants that should be presented in the UI in a different way
- * but are not fundamentally different from one another. This type defines the allowed variant
- * values.
- */
-export type ExternalServiceVariant = 'dotcom' | 'enterprise'
-
-export function isExternalServiceVariant(s: string): s is ExternalServiceVariant {
-    return s === 'dotcom' || s === 'enterprise'
-}
-
-export interface AddExternalServiceMetadata extends ExternalServiceKindMetadata {
-    kind: GQL.ExternalServiceKind
-    variant?: ExternalServiceVariant
-}
-
-/**
- * We want to have more than one "add" option for some external services (e.g., GitHub.com vs. GitHub Enterprise).
- * These patches define the overrides that should be applied to certain external services.
- */
-const externalServiceAddVariants: Partial<Record<
-    GQL.ExternalServiceKind,
-    Partial<Record<ExternalServiceVariant, Partial<ExternalServiceKindMetadata>>>
->> = {
-    [GQL.ExternalServiceKind.GITHUB]: {
-        dotcom: {
-            title: 'GitHub.com repositories',
-            shortDescription: 'Add GitHub.com repositories.',
-            editorActions: GITHUB_EXTERNAL_SERVICE.editorActions || [],
-        },
-        enterprise: {
-            title: 'GitHub Enterprise repositories',
-            shortDescription: 'Add GitHub Enterprise repositories.',
-            defaultDisplayName: 'GitHub Enterprise',
-            defaultConfig: `// Use Ctrl+Space for completion, and hover over JSON properties for documentation.
-// GitHub external service docs: https://docs.sourcegraph.com/admin/external_service/github
-{
-  // GitHub Enterprise URL
-  "url": "https://github.example.com",
-
-  // token: GitHub API access token.
-  // Visit https://[github-enterprise-url]/settings/tokens/new?scopes=repo&description=Sourcegraph to create a token
-  // with access to public and private repositories
-  "token": "<access token>",
-
-  // SELECTING REPOSITORIES
-  //
-  // There are 3 fields used to select repositories for searching and code intel:
-  //  - repositoryQuery (required)
-  //  - repos
-  //  - exclude
-  //
-
-  // repositoryQuery: List of strings, either a special keyword, e.g. "affiliated", or
-  // GitHub search qualifiers, e.g. "archived:false"
-  //
-  // For getting started, use either:
-  //  - "org:<name>" // (e.g. "org:sourcegraph") all repositories belonging to the organization
-  // or
-  //  - "affiliated" // all repositories affiliated (accessible) by the token's owner
-  //
-  // Additional query strings can be added to refine results:
-  //  - "archived:false fork:no created:>=2016" // use of multiple search qualifiers
-  //  - "user:docker repo:kubernetes/kubernetes" // fetch repositories outside of the user/org account
-  //
-  // See https://help.github.com/en/articles/searching-for-repositories for the list of search qualifiers.
-  "repositoryQuery": [
-  //   "org:name"
-  ],
-
-  // repos: Explicit list of repositories to select
-  // "repos": [
-  //   "<owner>/<repository>"
-  // ],
-
-  // exclude: Repositories to exclude (overrides repositories from repositoryQuery and repos)
-  // "exclude": [
-  //   {
-  //   "name": "<owner>/<repository>"
-  //   }
-  // ]
-}`,
-        },
-    },
-}
-
-export const ALL_EXTERNAL_SERVICE_ADD_VARIANTS: AddExternalServiceMetadata[] = flatMap(
-    map(ALL_EXTERNAL_SERVICES, (service: ExternalServiceKindMetadata, kindString: string):
-        | AddExternalServiceMetadata
-        | AddExternalServiceMetadata[] => {
-        const kind = kindString as GQL.ExternalServiceKind
-        if (externalServiceAddVariants[kind]) {
-            const patches = externalServiceAddVariants[kind]
-            return map(patches, (patch, variantString) => {
-                const variant = variantString as ExternalServiceVariant
-                return {
-                    ...service,
-                    kind,
-                    variant,
-                    ...patch,
-                }
-            })
-        }
-        return {
-            ...service,
-            kind,
-        }
-    })
-)
-
-export function getExternalService(
-    kind: GQL.ExternalServiceKind,
-    variantForAdd?: ExternalServiceVariant
-): ExternalServiceKindMetadata {
-    const foundVariants = ALL_EXTERNAL_SERVICE_ADD_VARIANTS.filter(
-        serviceVariant => serviceVariant.kind === kind && serviceVariant.variant === variantForAdd
-    )
-    if (foundVariants.length > 0) {
-        return foundVariants[0]
-    }
-    return ALL_EXTERNAL_SERVICES[kind]
-}
+// export function getExternalService(
+//     kind: GQL.ExternalServiceKind,
+//     variantForAdd?: ExternalServiceVariant
+// ): ExternalServiceKindMetadata {
+//     const foundVariants = ALL_EXTERNAL_SERVICE_ADD_VARIANTS.filter(
+//         serviceVariant => serviceVariant.kind === kind && serviceVariant.variant === variantForAdd
+//     )
+//     if (foundVariants.length > 0) {
+//         return foundVariants[0]
+//     }
+//     return ALL_EXTERNAL_SERVICES[kind]
+// }
