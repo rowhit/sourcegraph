@@ -1,6 +1,5 @@
 import * as H from 'history'
 import React from 'react'
-import * as GQL from '../../../shared/src/graphql/schema'
 import { PageTitle } from '../components/PageTitle'
 import { ThemeProps } from '../../../shared/src/theme'
 import { ExternalServiceCard } from '../components/ExternalServiceCard'
@@ -31,8 +30,9 @@ export class SiteAdminAddExternalServicesPage extends React.Component<Props> {
         const id = this.getExternalServiceID()
         if (id) {
             const externalService = externalServices[id]
-            if (externalService)
+            if (externalService) {
                 return <SiteAdminAddExternalServicePage {...this.props} externalService={externalService} />
+            }
         }
         return (
             <div className="add-external-services-page mt-3">

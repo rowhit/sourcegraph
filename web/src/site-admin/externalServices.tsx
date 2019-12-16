@@ -823,6 +823,17 @@ export const externalServices: Record<string, ExternalServiceKindMetadata> = {
     aws: AWS_EXTERNAL_SERVICE,
 }
 
+export const defaultExternalServices: Record<GQL.ExternalServiceKind, ExternalServiceKindMetadata> = {
+    [GQL.ExternalServiceKind.GITHUB]: GITHUB_DOTCOM,
+    [GQL.ExternalServiceKind.BITBUCKETCLOUD]: BITBUCKET_CLOUD_SERVICE,
+    [GQL.ExternalServiceKind.BITBUCKETSERVER]: BITBUCKET_SERVER_SERVICE,
+    [GQL.ExternalServiceKind.GITLAB]: GITLAB_SERVICE,
+    [GQL.ExternalServiceKind.GITOLITE]: GITOLITE_SERVICE,
+    [GQL.ExternalServiceKind.PHABRICATOR]: PHABRICATOR_SERVICE,
+    [GQL.ExternalServiceKind.OTHER]: OTHER_SERVICE,
+    [GQL.ExternalServiceKind.AWSCODECOMMIT]: AWS_EXTERNAL_SERVICE,
+}
+
 // export function getExternalService(
 //     kind: GQL.ExternalServiceKind,
 //     variantForAdd?: ExternalServiceVariant
