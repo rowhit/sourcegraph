@@ -3,7 +3,8 @@ import { Redirect, RouteComponentProps, Switch, Route } from 'react-router'
 import { LayoutProps } from './Layout'
 import { parseSearchURLQuery } from './search'
 import { lazyComponent } from './util/lazyComponent'
-import { WelcomePage, WelcomeAddReposPage } from './onboarding/WelcomePage'
+import { WelcomePage, WelcomeAddReposPage, WelcomeAddExternalServicePage } from './onboarding/WelcomePage'
+import { eventLogger } from './tracking/eventLogger'
 
 const SearchPage = lazyComponent(() => import('./search/input/SearchPage'), 'SearchPage')
 const SearchResults = lazyComponent(() => import('./search/results/SearchResults'), 'SearchResults')
@@ -39,6 +40,8 @@ export const repoRevRoute: LayoutRouteProps<{ repoRevAndRest: string }> = {
     path: '/:repoRevAndRest+',
     render: lazyComponent(() => import('./repo/RepoContainer'), 'RepoContainer'),
 }
+
+const renderAddCodeHost = (props: any): JSX.Element => <WelcomeAddReposPage {...props} eventLogger={eventLogger} />
 
 /**
  * Holds all top-level routes for the app because both the navbar and the main content area need to
@@ -122,9 +125,7 @@ export const routes: readonly LayoutRouteProps<any>[] = [
         render: (props: any) => {
             return (
                 <Switch>
-                    <Route path="/asdf-welcome/add-repositories">
-                        <WelcomeAddReposPage />
-                    </Route>
+                    <Route path="/asdf-welcome/select-code-host" render={renderAddCodeHost} />
                     <Route path="/asdf-welcome">
                         <WelcomePage />
                     </Route>

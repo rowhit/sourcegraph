@@ -162,7 +162,7 @@ export class SiteAdminAddExternalServicePage extends React.Component<Props, Stat
     }
 }
 
-function addExternalService(
+export function addExternalService(
     input: GQL.IAddExternalServiceInput,
     eventLogger: Pick<Props['eventLogger'], 'log'>
 ): Observable<GQL.IExternalService> {
