@@ -120,7 +120,6 @@ export const routes: readonly LayoutRouteProps<any>[] = [
     {
         path: '/asdf-welcome',
         render: (props: any) => {
-            console.log('# HERE')
             return (
                 <Switch>
                     <Route path="/asdf-welcome/add-repositories">

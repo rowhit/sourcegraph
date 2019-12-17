@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { Link } from '../../../shared/src/components/Link'
-import { ALL_EXTERNAL_SERVICE_ADD_VARIANTS, GITHUB_EXTERNAL_SERVICE } from '../site-admin/externalServices'
 import { ExternalServiceCard } from '../components/ExternalServiceCard'
-import { SiteAdminAddExternalServicesPage } from '../site-admin/SiteAdminAddExternalServicesPage'
-import * as GQL from '../../../shared/src/graphql/schema'
+import { onboardingExternalServices } from '../site-admin/externalServices'
+import { map } from 'lodash'
 
 /**
  * The explore area, which shows cards containing summaries and actions from product features. The purpose of it is
@@ -42,32 +41,22 @@ export class WelcomeAddReposPage extends React.Component<WelcomeAddReposPageProp
     public state: WelcomeAddReposPageState = {}
 
     public render(): JSX.Element | null {
-        return <div>TODO</div>
-        // const externalServices = ALL_EXTERNAL_SERVICE_ADD_VARIANTS.filter(
-        //     s => s.kind !== GQL.ExternalServiceKind.PHABRICATOR
-        // ).map(s => ({ ...s, shortDescription: undefined }))
+        const externalServices = onboardingExternalServices
 
-        // // const externalServices = externalServiceADdVar
+        return (
+            <div className="welcome-page-left">
+                <div className="welcome-page-left__content">
+                    <h2 className="welcome-page-left__content-header">
+                        Where are the repositories you&rsquo;d like Sourcegraph to index?
+                    </h2>
 
-        // return (
-        //     <div className="welcome-page-left">
-        //         <div className="welcome-page-left__content">
-        //             <h2 className="welcome-page-left__content-header">
-        //                 Where are the repositories you&rsquo;d like Sourcegraph to index?
-        //             </h2>
-
-        //             {externalServices.map((service, i) => (
-        //                 <div className="add-external-services-page__card" key={i}>
-        //                     <ExternalServiceCard
-        //                         to={SiteAdminAddExternalServicesPage.getAddURL(service)}
-        //                         {...service}
-        //                     />
-        //                 </div>
-        //             ))}
-        //         </div>
-        //     </div>
-        // )
+                    {map(externalServices, (externalService, id) => (
+                        <div className="add-external-services-page__card" key={id}>
+                            <ExternalServiceCard to={'?TODO'} {...externalService} />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
     }
 }
-
-// const onboarding

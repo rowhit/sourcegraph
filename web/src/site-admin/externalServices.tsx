@@ -231,8 +231,8 @@ const GITHUB_DOTCOM: ExternalServiceKindMetadata = {
 }
 const GITHUB_ENTERPRISE: ExternalServiceKindMetadata = {
     ...GITHUB_DOTCOM,
-    title: 'GitHub Enterprise',
-    shortDescription: undefined,
+    title: 'GitHub Enterprise repositories',
+    shortDescription: 'Add GitHub Enterprise repositories',
     defaultDisplayName: 'GitHub Enterprise',
     defaultConfig: `// Use Ctrl+Space for completion, and hover over JSON properties for documentation.
     // GitHub external service docs: https://docs.sourcegraph.com/admin/external_service/github
@@ -810,6 +810,16 @@ const OTHER_SERVICE: ExternalServiceKindMetadata = {
         },
     ],
 }
+const EZ_GITHUB_DOTCOM = {
+    ...GITHUB_DOTCOM,
+    shortDescription: undefined,
+    longDescription: undefined,
+    title: 'GitHub.com',
+}
+
+export const onboardingExternalServices: Record<string, ExternalServiceKindMetadata> = {
+    github: EZ_GITHUB_DOTCOM,
+}
 
 export const externalServices: Record<string, ExternalServiceKindMetadata> = {
     github: GITHUB_DOTCOM,
@@ -833,16 +843,3 @@ export const defaultExternalServices: Record<GQL.ExternalServiceKind, ExternalSe
     [GQL.ExternalServiceKind.OTHER]: OTHER_SERVICE,
     [GQL.ExternalServiceKind.AWSCODECOMMIT]: AWS_EXTERNAL_SERVICE,
 }
-
-// export function getExternalService(
-//     kind: GQL.ExternalServiceKind,
-//     variantForAdd?: ExternalServiceVariant
-// ): ExternalServiceKindMetadata {
-//     const foundVariants = ALL_EXTERNAL_SERVICE_ADD_VARIANTS.filter(
-//         serviceVariant => serviceVariant.kind === kind && serviceVariant.variant === variantForAdd
-//     )
-//     if (foundVariants.length > 0) {
-//         return foundVariants[0]
-//     }
-//     return ALL_EXTERNAL_SERVICES[kind]
-// }
