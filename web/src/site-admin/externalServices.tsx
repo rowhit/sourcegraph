@@ -850,10 +850,40 @@ const EZ_GITLAB_DOTCOM = {
 }`,
 }
 
+const EZ_GITLAB_SELFMANAGED = {
+    ...EZ_GITLAB_DOTCOM,
+    title: 'GitLab Self-Managed',
+    defaultConfig: `{
+  "url": "https://gitlab.example.com",
+  "token": "<access token>",
+  "projectQuery": [
+    //   "?archived=no&visibility=private" // set this to "none" to disable querying
+  ]
+}`,
+}
+
+const EZ_BITBUCKET_DOTORG = {
+    ...BITBUCKET_CLOUD_SERVICE,
+    shortDescription: undefined,
+    longDescription: undefined,
+    editorActions: undefined,
+    title: 'Bitbucket.org',
+    defaultConfig: '{ TODO }',
+}
+
+const EZ_BITBUCKET_SERVER = {
+    ...EZ_BITBUCKET_DOTORG,
+    title: 'Bitbucket Server',
+    defaultConfig: '{ TODO }',
+}
+
 export const onboardingExternalServices: Record<string, ExternalServiceKindMetadata> = {
     github: EZ_GITHUB_DOTCOM,
     ghe: EZ_GITHUB_ENTERPRISE,
-    gitlab: EZ_GITLAB_DOTCOM,
+    gitlabcom: EZ_GITLAB_DOTCOM,
+    gitlab: EZ_GITLAB_SELFMANAGED,
+    bitbucket: EZ_BITBUCKET_DOTORG,
+    bitbucketserver: EZ_BITBUCKET_SERVER,
 }
 
 export const externalServices: Record<string, ExternalServiceKindMetadata> = {
