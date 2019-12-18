@@ -3,7 +3,7 @@ import { Redirect, RouteComponentProps, Switch, Route } from 'react-router'
 import { LayoutProps } from './Layout'
 import { parseSearchURLQuery } from './search'
 import { lazyComponent } from './util/lazyComponent'
-import { WelcomePage, WelcomeAddReposPage, WelcomeAddExternalServicePage } from './onboarding/WelcomePage'
+import { WelcomePage, WelcomeAddReposPage} from './onboarding/WelcomePage'
 import { eventLogger } from './tracking/eventLogger'
 
 const SearchPage = lazyComponent(() => import('./search/input/SearchPage'), 'SearchPage')

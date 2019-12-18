@@ -821,7 +821,7 @@ const EZ_GITHUB_DOTCOM = {
   "token": "<access token>",
   "orgs": [
     "<organization name>"
-  ],
+  ]
 }`,
 }
 

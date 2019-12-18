@@ -17,6 +17,7 @@ interface Props extends Pick<ExternalServiceKindMetadata, 'jsonSchema' | 'editor
     mode: 'edit' | 'create'
     loading: boolean
     hideDisplayNameField?: boolean
+    submitName?: string
     onSubmit: (event?: React.FormEvent<HTMLFormElement>) => void
     onChange: (change: GQL.IAddExternalServiceInput) => void
 }
@@ -85,7 +86,8 @@ export class SiteAdminExternalServiceForm extends React.Component<Props, {}> {
                     disabled={this.props.loading}
                 >
                     {this.props.loading && <LoadingSpinner className="icon-inline" />}
-                    {this.props.mode === 'edit' ? 'Update external service' : 'Add external service'}
+                    {this.props.submitName ??
+                        (this.props.mode === 'edit' ? 'Update external service' : 'Add external service')}
                 </button>
             </Form>
         )

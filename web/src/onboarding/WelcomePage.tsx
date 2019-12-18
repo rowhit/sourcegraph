@@ -11,7 +11,7 @@ import { SiteAdminExternalServiceForm } from '../site-admin/SiteAdminExternalSer
 import * as GQL from '../../../shared/src/graphql/schema'
 import { Subject, Subscription } from 'rxjs'
 import { switchMap, catchError, tap } from 'rxjs/operators'
-import { addExternalService, SiteAdminAddExternalServicePage } from '../site-admin/SiteAdminAddExternalServicePage'
+import { addExternalService } from '../site-admin/SiteAdminAddExternalServicePage'
 import { refreshSiteFlags } from '../site/backend'
 import { ThemeProps } from '../../../shared/src/theme'
 
@@ -156,7 +156,7 @@ export class WelcomeAddExternalServicePage extends React.Component<Props, State>
                         // tslint:disable-next-line: rxjs-no-nested-subscribe
                         refreshSiteFlags().subscribe({ error: err => console.error(err) })
                         this.setState({ loading: false })
-                        this.props.history.push('/site-admin/external-services')
+                        this.props.history.push('/search')
                     }
                 })
         )
@@ -170,11 +170,11 @@ export class WelcomeAddExternalServicePage extends React.Component<Props, State>
         const createdExternalService = this.state.externalService
         return (
             <div className="welcome-page-left">
-                <div className="welcome-page-left__content">
+                <div className="welcome-page-left__add-code-host-content mb-5">
                     <PageTitle title="Onboarding" />
                     {createdExternalService?.warning ? (
                         <div>
-                            <div className="mb-3">
+                            {/* <div className="mb-3">
                                 <ExternalServiceCard
                                     {...this.props.externalService}
                                     title={createdExternalService.displayName}
@@ -185,50 +185,54 @@ export class WelcomeAddExternalServicePage extends React.Component<Props, State>
                             <div className="alert alert-warning">
                                 <h4>Warning</h4>
                                 <Markdown dangerousInnerHTML={renderMarkdown(createdExternalService.warning)} />
-                            </div>
+                            </div> */}
+                            TODO
                         </div>
                     ) : (
                         <div>
                             <Link className="welcome-page-left__back-button" to="/asdf-welcome/select-code-host">
                                 &lt; Back
                             </Link>
+                            <div className="mb-3">
+                                <ExternalServiceCard {...this.props.externalService} />
+                            </div>
                             <h2 className="welcome-page-left__content-header">
                                 Which repositories would you like to index from{' '}
                                 {this.props.externalService.defaultDisplayName}?
                             </h2>
-                            <div className="mb-3">
-                                <ExternalServiceCard {...this.props.externalService} />
-                            </div>
                             {/* TODO: move this to the metadata struct */}
                             <div>
                                 <p>
-                                    To index your GitHub repositories with Sourcegraph, you'll need to create a{' '}
-                                    <Link to="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line">
-                                        GitHub access token
-                                    </Link>
-                                    . This gives Sourcegraph permission to access your repositories on
-                                    GitHub&mdash;don&rsquo;t worry, your repositories <i>never</i> leave this instance
-                                    of Sourcegraph.
+                                    <b>Instructions:</b>
                                 </p>
                                 <ol>
                                     <li>
-                                        <Link to="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line">
-                                            Create a GitHub access token.
-                                        </Link>
+                                        <Link
+                                            to="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Create a GitHub access token
+                                        </Link>{' '}
+                                        with <code>repo</code> scope to allow Sourcegraph to clone your repositories.
+                                        <br />
+                                        (Your repositories never leave this Sourcegraph instance.)
                                     </li>
                                     <li>
-                                        Add the access token to the <code>token</code> field below.
+                                        Set the value of the <code>token</code> field below to be your GitHub access
+                                        token.
                                     </li>
                                     <li>
-                                        Add the list of GitHub organizations whose repositories you would like
-                                        Sourcegraph to index to the <code>organizations</code> field below.
+                                        Set the <code>organizations</code> field to be the list of GitHub organizations
+                                        whose repositories Sourcegraph should index.
                                     </li>
                                 </ol>
                                 <p>
-                                    You can also specify more advanced options in the configuration below. For starters,
-                                    we recommend just going with the simple options, but if you really want to use the
-                                    complex configuration now, hit <code>Ctrl+Space</code> in the editor below to see
-                                    all options and refer to the <Link to="TODO">complete documentation</Link>.
+                                    For more advanced configuration options, see{' '}
+                                    <Link to="https://docs.sourcegraph.com/admin/external_service/github#configuration">
+                                        the docs
+                                    </Link>
+                                    .
                                 </p>
                             </div>
                             <div className="mb-4">{this.props.externalService.longDescription}</div>
@@ -239,6 +243,7 @@ export class WelcomeAddExternalServicePage extends React.Component<Props, State>
                                 editorActions={this.props.externalService.editorActions}
                                 jsonSchema={this.props.externalService.jsonSchema}
                                 mode="create"
+                                submitName="Next"
                                 onSubmit={this.onSubmit}
                                 onChange={this.onChange}
                                 loading={this.state.loading}
