@@ -814,7 +814,15 @@ const EZ_GITHUB_DOTCOM = {
     ...GITHUB_DOTCOM,
     shortDescription: undefined,
     longDescription: undefined,
+    editorActions: undefined,
     title: 'GitHub.com',
+    defaultConfig: `{
+  "url": "https://github.com",
+  "token": "<access token>",
+  "orgs": [
+    "<organization name>"
+  ],
+}`,
 }
 
 export const onboardingExternalServices: Record<string, ExternalServiceKindMetadata> = {

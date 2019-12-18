@@ -81,8 +81,14 @@
 
     color: $color-light-text-1;
 
+    &__back-button {
+        display: inline-block;
+        margin-bottom: 1em;
+    }
+
     &__content {
         width: 50%;
+        max-width: 750px;
         margin-top: 10rem;
         margin-left: auto;
         margin-right: auto;

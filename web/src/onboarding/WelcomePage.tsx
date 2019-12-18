@@ -65,7 +65,7 @@ export class WelcomeAddReposPage extends React.Component<WelcomeAddReposPageProp
             const externalService = externalServices[id]
             if (externalService) {
                 return (
-                    <SiteAdminAddExternalServicePage
+                    <WelcomeAddExternalServicePage
                         {...this.props}
                         externalService={externalService}
                         isLightTheme={true}
@@ -101,7 +101,6 @@ interface Props extends ThemeProps {
     }
 }
 interface State {
-    displayName: string
     config: string
 
     /**
@@ -125,7 +124,6 @@ export class WelcomeAddExternalServicePage extends React.Component<Props, State>
         super(props)
         this.state = {
             loading: false,
-            displayName: props.externalService.defaultDisplayName,
             config: props.externalService.defaultConfig,
         }
     }
@@ -171,50 +169,91 @@ export class WelcomeAddExternalServicePage extends React.Component<Props, State>
     public render(): JSX.Element | null {
         const createdExternalService = this.state.externalService
         return (
-            <div className="add-external-service-page mt-3">
-                <PageTitle title="Add external service" />
-                <h1>Add external service</h1>
-                {createdExternalService?.warning ? (
-                    <div>
-                        <div className="mb-3">
-                            <ExternalServiceCard
-                                {...this.props.externalService}
-                                title={createdExternalService.displayName}
-                                shortDescription="Update this external service configuration to manage repository mirroring."
-                                to={`/site-admin/external-services/${createdExternalService.id}`}
+            <div className="welcome-page-left">
+                <div className="welcome-page-left__content">
+                    <PageTitle title="Onboarding" />
+                    {createdExternalService?.warning ? (
+                        <div>
+                            <div className="mb-3">
+                                <ExternalServiceCard
+                                    {...this.props.externalService}
+                                    title={createdExternalService.displayName}
+                                    shortDescription="Update this external service configuration to manage repository mirroring."
+                                    to={`/site-admin/external-services/${createdExternalService.id}`}
+                                />
+                            </div>
+                            <div className="alert alert-warning">
+                                <h4>Warning</h4>
+                                <Markdown dangerousInnerHTML={renderMarkdown(createdExternalService.warning)} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <Link className="welcome-page-left__back-button" to="/asdf-welcome/select-code-host">
+                                &lt; Back
+                            </Link>
+                            <h2 className="welcome-page-left__content-header">
+                                Which repositories would you like to index from{' '}
+                                {this.props.externalService.defaultDisplayName}?
+                            </h2>
+                            <div className="mb-3">
+                                <ExternalServiceCard {...this.props.externalService} />
+                            </div>
+                            {/* TODO: move this to the metadata struct */}
+                            <div>
+                                <p>
+                                    To index your GitHub repositories with Sourcegraph, you'll need to create a{' '}
+                                    <Link to="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line">
+                                        GitHub access token
+                                    </Link>
+                                    . This gives Sourcegraph permission to access your repositories on
+                                    GitHub&mdash;don&rsquo;t worry, your repositories <i>never</i> leave this instance
+                                    of Sourcegraph.
+                                </p>
+                                <ol>
+                                    <li>
+                                        <Link to="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line">
+                                            Create a GitHub access token.
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        Add the access token to the <code>token</code> field below.
+                                    </li>
+                                    <li>
+                                        Add the list of GitHub organizations whose repositories you would like
+                                        Sourcegraph to index to the <code>organizations</code> field below.
+                                    </li>
+                                </ol>
+                                <p>
+                                    You can also specify more advanced options in the configuration below. For starters,
+                                    we recommend just going with the simple options, but if you really want to use the
+                                    complex configuration now, hit <code>Ctrl+Space</code> in the editor below to see
+                                    all options and refer to the <Link to="TODO">complete documentation</Link>.
+                                </p>
+                            </div>
+                            <div className="mb-4">{this.props.externalService.longDescription}</div>
+                            <SiteAdminExternalServiceForm
+                                {...this.props}
+                                error={this.state.error}
+                                input={this.getExternalServiceInput()}
+                                editorActions={this.props.externalService.editorActions}
+                                jsonSchema={this.props.externalService.jsonSchema}
+                                mode="create"
+                                onSubmit={this.onSubmit}
+                                onChange={this.onChange}
+                                loading={this.state.loading}
+                                hideDisplayNameField={true}
                             />
                         </div>
-                        <div className="alert alert-warning">
-                            <h4>Warning</h4>
-                            <Markdown dangerousInnerHTML={renderMarkdown(createdExternalService.warning)} />
-                        </div>
-                    </div>
-                ) : (
-                    <div>
-                        <div className="mb-3">
-                            <ExternalServiceCard {...this.props.externalService} />
-                        </div>
-                        <div className="mb-4">{this.props.externalService.longDescription}</div>
-                        <SiteAdminExternalServiceForm
-                            {...this.props}
-                            error={this.state.error}
-                            input={this.getExternalServiceInput()}
-                            editorActions={this.props.externalService.editorActions}
-                            jsonSchema={this.props.externalService.jsonSchema}
-                            mode="create"
-                            onSubmit={this.onSubmit}
-                            onChange={this.onChange}
-                            loading={this.state.loading}
-                        />
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         )
     }
 
     private getExternalServiceInput(): GQL.IAddExternalServiceInput {
         return {
-            displayName: this.state.displayName,
+            displayName: this.props.externalService.defaultDisplayName,
             config: this.state.config,
             kind: this.props.externalService.kind,
         }
@@ -222,7 +261,6 @@ export class WelcomeAddExternalServicePage extends React.Component<Props, State>
 
     private onChange = (input: GQL.IAddExternalServiceInput): void => {
         this.setState({
-            displayName: input.displayName,
             config: input.config,
         })
     }
