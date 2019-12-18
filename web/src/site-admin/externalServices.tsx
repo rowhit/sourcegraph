@@ -824,9 +824,36 @@ const EZ_GITHUB_DOTCOM = {
   ]
 }`,
 }
+const EZ_GITHUB_ENTERPRISE = {
+    ...EZ_GITHUB_DOTCOM,
+    title: 'GitHub Enterprise',
+    defaultConfig: `{
+  "url": "https://github.example.com",
+  "token": "<access token>",
+  "orgs": [
+    "<organization name>"
+  ]
+}`,
+}
+const EZ_GITLAB_DOTCOM = {
+    ...GITLAB_SERVICE,
+    shortDescription: undefined,
+    longDescription: undefined,
+    editorActions: undefined,
+    title: 'GitLab.com',
+    defaultConfig: `{
+  "url": "https://gitlab.com",
+  "token": "<access token>",
+  "projectQuery": [
+    //   "?archived=no&visibility=private" // set this to "none" to disable querying
+  ]
+}`,
+}
 
 export const onboardingExternalServices: Record<string, ExternalServiceKindMetadata> = {
     github: EZ_GITHUB_DOTCOM,
+    ghe: EZ_GITHUB_ENTERPRISE,
+    gitlab: EZ_GITLAB_DOTCOM,
 }
 
 export const externalServices: Record<string, ExternalServiceKindMetadata> = {
