@@ -149,6 +149,8 @@ export class QueryInput extends React.Component<Props, State> {
         // (will be used in next PR to push to queryHistory (undo/redo))
         this.subscriptions.add(this.inputValues.subscribe(queryState => this.props.onChange(queryState)))
 
+        this.subscriptions.add(this.suggestionsHidden.subscribe(() => this.setState({showSuggestions: false})))
+
         if (!this.props.withoutSuggestions) {
             // Trigger suggestions.
             // This is set on componentDidUpdate so the data flow can be easier to manage, making it
@@ -255,10 +257,6 @@ export class QueryInput extends React.Component<Props, State> {
                                 fuzzySearchSuggestions
                             )
                         }),
-                        // Abort suggestion display on route change or suggestion hiding
-                        takeUntil(this.suggestionsHidden),
-                        // But resubscribe afterwards
-                        repeat()
                     )
                     .subscribe(
                         state => {
@@ -443,10 +441,6 @@ export class QueryInput extends React.Component<Props, State> {
         scrollIntoView(menuNode, node)
     }
 
-    private setShowSuggestions = (showSuggestions: boolean): void => {
-        this.setState({ showSuggestions }, () => !showSuggestions && this.suggestionsHidden.next())
-    }
-
     private onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         // Ctrl+Space to show all available filter type suggestions
         if (event.ctrlKey && event.key === ' ') {
@@ -458,16 +452,16 @@ export class QueryInput extends React.Component<Props, State> {
             })
         }
         if (event.key === 'Enter') {
-            this.setShowSuggestions(false)
+            this.suggestionsHidden.next()
         }
     }
 
     private onInputBlur = (): void => {
-        this.setShowSuggestions(false)
+        this.suggestionsHidden.next()
     }
 
     private onInputFocus = (): void => {
-        this.setShowSuggestions(true)
+        this.setState({showSuggestions: true})
     }
 
     /**
